@@ -1,4 +1,5 @@
-// backend/src/controllers/credentialsController.ts
+// Ejemplo de controlador ajustado en credentialsController.ts
+
 import { Request, Response, RequestHandler } from 'express';
 import TwilioCredentialsModel, { TwilioCredential } from '../models/TwilioCredentials';
 
@@ -10,16 +11,16 @@ export const addCredentials: RequestHandler = async (req: AuthenticatedRequest, 
   try {
     const { name, account_sid, auth_token } = req.body;
     const userId = req.user?.id ? parseInt(req.user.id) : undefined;
-    
+
     const credential: TwilioCredential = {
       name,
       account_sid,
       auth_token,
       user_id: userId
     };
-    
+
     const credentialId = await TwilioCredentialsModel.create(credential);
-    const newCredential = await TwilioCredentialsModel.findById(credentialId, userId);
+    const newCredential = await TwilioCredentialsModel.findById(credentialId);
     
     res.status(201).json({ 
       success: true, 
@@ -38,7 +39,9 @@ export const addCredentials: RequestHandler = async (req: AuthenticatedRequest, 
 export const getUserCredentials: RequestHandler = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
     const userId = req.user?.id ? parseInt(req.user.id) : undefined;
-    const credentials = await TwilioCredentialsModel.findAll(userId);
+    
+    // Filtra por user_id si se proporciona
+    const credentials = await TwilioCredentialsModel.findAll(userId ? { user_id: userId } : undefined);
     
     res.status(200).json({ 
       success: true, 
@@ -56,8 +59,8 @@ export const getUserCredentials: RequestHandler = async (req: AuthenticatedReque
 export const getCredentialById: RequestHandler = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
     const credentialId = parseInt(req.params.id);
-    const userId = req.user?.id ? parseInt(req.user.id) : undefined;
-    const credential = await TwilioCredentialsModel.findById(credentialId, userId);
+    // No se pasa userId aquí
+    const credential = await TwilioCredentialsModel.findById(credentialId);
     
     if (!credential) {
       res.status(404).json({ 
@@ -89,10 +92,12 @@ export const updateCredentials: RequestHandler = async (req: AuthenticatedReques
     const credential: TwilioCredential = {
       name,
       account_sid,
-      auth_token
+      auth_token,
+      user_id: userId
     };
     
-    const updated = await TwilioCredentialsModel.update(credentialId, credential, userId);
+    // Se actualiza sin el tercer parámetro extra
+    const updated = await TwilioCredentialsModel.update(credentialId, credential);
     
     if (!updated) {
       res.status(404).json({ 
@@ -102,7 +107,7 @@ export const updateCredentials: RequestHandler = async (req: AuthenticatedReques
       return;
     }
     
-    const updatedCredential = await TwilioCredentialsModel.findById(credentialId, userId);
+    const updatedCredential = await TwilioCredentialsModel.findById(credentialId);
     
     res.status(200).json({ 
       success: true, 
@@ -121,9 +126,8 @@ export const updateCredentials: RequestHandler = async (req: AuthenticatedReques
 export const deleteCredentials: RequestHandler = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
     const credentialId = parseInt(req.params.id);
-    const userId = req.user?.id ? parseInt(req.user.id) : undefined;
-    
-    const deleted = await TwilioCredentialsModel.remove(credentialId, userId);
+    // Se elimina sin pasar userId extra
+    const deleted = await TwilioCredentialsModel.remove(credentialId);
     
     if (!deleted) {
       res.status(404).json({ 
