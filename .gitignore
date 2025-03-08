@@ -1,7 +1,5 @@
 # Ignorar node_modules en backend y frontend
-backend/node_modules/
-frontend/node_modules/
-
+**/node_modules/
 # Ignorar carpetas de compilación
 backend/dist/
 frontend/dist/
