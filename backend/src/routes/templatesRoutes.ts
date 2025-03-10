@@ -1,23 +1,33 @@
 import express from 'express';
 import { addCredentials, getUserCredentials, getCredentialById, updateCredentials, deleteCredentials } from '../controllers/credentialsController';
 import { getUsers, getUserById, addUser, updateUser, deleteUser } from '../controllers/usersController';
+import { addPhoneNumber, getPhoneNumbers } from '../controllers/phoneNumbersController';
 
 const router = express.Router();
 
-// Rutas para gestionar las credenciales (se montan en /api)
-router.post('/', addCredentials);
-router.get('/', getUserCredentials);
-router.get('/:id', getCredentialById);
-router.put('/:id', updateCredentials);
-router.delete('/:id', deleteCredentials);
+// Rutas para credenciales (se accede en /api/credentials)
+router.route('/credentials')
+  .post(addCredentials)
+  .get(getUserCredentials);
 
-// Rutas para gestionar los usuarios (se montan en /api/users)
-router.get('/users', getUsers);
+router.route('/credentials/:id')
+  .get(getCredentialById)
+  .put(updateCredentials)
+  .delete(deleteCredentials);
+
+// Rutas para usuarios (se accede en /api/users)
+router.route('/users')
+  .get(getUsers)
+  .post(addUser);
+
 router.route('/users/:id')
   .get(getUserById)
   .put(updateUser)
   .delete(deleteUser);
-router.route('/users')
-  .post(addUser);
+
+// Rutas para números de teléfono (se accede en /api/phone-numbers)
+router.route('/phone-numbers')
+  .post(addPhoneNumber)
+  .get(getPhoneNumbers);
 
 export default router;

@@ -11,11 +11,10 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 
-// Se montan todas las rutas definidas en authRoutes bajo /auth
+// Rutas públicas para autenticación
 app.use('/auth', authRoutes);
 
-
-// Se montan todas las rutas definidas en templatesRoutes bajo /api
+// Rutas protegidas: todos los endpoints definidos en templatesRoutes se montan en /api
 app.use('/api', authenticate, templatesRoutes);
 
 app.listen(PORT, () => {
