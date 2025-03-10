@@ -41,7 +41,13 @@ export class UserModel extends BaseModel<User> {
     ];
     const [result]: any = await db.execute(query, params);
     return result.insertId;
-  } 
+  }
+
+  async findByEmail(email: string): Promise<User | null> {
+    const query = `SELECT * FROM ${this.tableName} WHERE email = ?`;
+    const [rows]: any = await db.execute(query, [email]);
+    return rows.length > 0 ? rows[0] : null;
+  }
   
 
   async update(id: number, user: User): Promise<boolean> {
