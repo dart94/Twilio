@@ -2,6 +2,7 @@ import { Request, Response, RequestHandler } from 'express';
 import UserModel from '../models/User';
 import { User } from '../models/User';
 
+//Obtener usuarios
 export const getUsers: RequestHandler = async (req: Request, res: Response): Promise<void> => {
   try {
     const users = await UserModel.findAll();
@@ -11,6 +12,7 @@ export const getUsers: RequestHandler = async (req: Request, res: Response): Pro
   }
 };
 
+// Obtener usuario By Id
 export const getUserById: RequestHandler = async (req: Request, res: Response): Promise<void> => {
   try {
     const userId = parseInt(req.params.id);
@@ -25,6 +27,7 @@ export const getUserById: RequestHandler = async (req: Request, res: Response): 
   }
 };
 
+// Agregar usuario
 export const addUser: RequestHandler = async (req: Request, res: Response): Promise<void> => {
   try {
     const { username, email, password } = req.body;
@@ -37,6 +40,8 @@ export const addUser: RequestHandler = async (req: Request, res: Response): Prom
   }
 };
 
+
+//Actualizar Usuario
 export const updateUser: RequestHandler = async (req: Request, res: Response): Promise<void> => {
   try {
     const userId = parseInt(req.params.id);
@@ -54,6 +59,8 @@ export const updateUser: RequestHandler = async (req: Request, res: Response): P
   }
 };
 
+
+//Eliminar usuario
 export const deleteUser: RequestHandler = async (req: Request, res: Response): Promise<void> => {
   try {
     const userId = parseInt(req.params.id);
