@@ -5,7 +5,7 @@ const swaggerOptions = {
   definition: {
     openapi: '3.0.0',
     info: {
-      title: 'API de Usuarios y Credenciales',
+      title: 'API Para twilio',
       version: '1.0.0',
       description: 'Documentación de la API usando Swagger',
     },
