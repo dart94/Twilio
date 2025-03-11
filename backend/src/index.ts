@@ -9,9 +9,13 @@ import { swaggerUi, swaggerSpec } from './swagger';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const cors = require('cors');
+
 
 app.use(express.json());
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec))
+app.use(cors());
+
 
 // Rutas públicas para autenticación
 app.use('/auth', authRoutes);
