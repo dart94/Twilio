@@ -1,80 +1,71 @@
-// backend/src/controllers/templatesController.ts
-import { Request, Response } from 'express';
-import * as twilioService from '../services/twilioTemplates';
+import { Request, Response, RequestHandler } from 'express';
+import TwilioCredentialsModel from '../models/TwilioCredentials';
+import { getContentTemplates, getTemplateDetails } from '../services/twilioTemplates';
 
-export const getTemplates = async (req: Request, res: Response) => {
+export const getTemplates: RequestHandler = async (req, res) => {
   try {
-    const credentialId = parseInt(req.params.credentialId);
-    
-    // Si el ID de credencial no es válido
-    if (isNaN(credentialId)) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'ID de credencial no válido' 
-      });
+    const { name } = req.query;
+
+    if (!name) {
+      res.status(400).json({ message: 'El parámetro "name" es requerido.' });
+      return; 
     }
-    
-    // Usar las credenciales para obtener plantillas
-    const templates = await twilioService.getContentTemplates(credentialId);
-    
-    res.status(200).json({ 
-      success: true, 
-      data: templates 
-    });
+
+    console.log(`📌 Buscando credencial con name: ${name}`);
+    const credentials = await TwilioCredentialsModel.findByName(name as string);
+
+    if (!credentials) {
+      res.status(404).json({ message: `No se encontró una credencial con el nombre "${name}".` });
+      return; // Finaliza la ejecución de la función
+    }
+
+    const { account_sid, auth_token } = credentials;
+    console.log('✅ Credenciales obtenidas:', { account_sid, auth_token: '***' });
+
+    // Obtener plantillas desde Twilio usando las credenciales dinámicas
+    const templates = await getContentTemplates(account_sid, auth_token);
+
+    const filteredTemplates = templates.map((template: any) => ({
+      friendly_name: template.friendly_name,
+      body: template.types?.['twilio/quick-reply']?.body || '', // Asegurar que no sea undefined
+      variables: template.variables || {} // Devolver un objeto vacío si no hay variables
+    }));
+
+    res.json(filteredTemplates);
   } catch (error) {
-    console.error('Error al obtener plantillas:', error);
-    
-    // Si el error es específicamente que no se encontraron las credenciales
-    if ((error as Error).message === 'Credenciales no encontradas') {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'Credencial no encontrada' 
-      });
-    }
-    
-    res.status(500).json({ 
-      success: false, 
-      message: 'Error al obtener plantillas',
-      error: (error as Error).message
-    });
+    console.error('❌ Error obteniendo plantillas:', error);
+    res.status(500).json({ error: 'Error al obtener plantillas' });
   }
 };
 
-export const getTemplateDetail = async (req: Request, res: Response) => {
+
+export const getTemplateById: RequestHandler = async (req, res) => {
   try {
-    const credentialId = parseInt(req.params.credentialId);
-    const { templateSid } = req.params;
-    
-    // Si el ID de credencial no es válido
-    if (isNaN(credentialId)) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'ID de credencial no válido' 
-      });
+    const { name } = req.query;
+    const { id } = req.params;
+
+    if (!name) {
+      res.status(400).json({ message: 'El parámetro "name" es requerido.' });
+      return; // Finaliza la ejecución de la función
     }
-    
-    // Usar las credenciales para obtener detalles de la plantilla
-    const templateDetails = await twilioService.getTemplateDetails(templateSid, credentialId);
-    
-    res.status(200).json({ 
-      success: true, 
-      data: templateDetails 
-    });
+
+    console.log(`📌 Buscando credencial con name: ${name}`);
+    const credentials = await TwilioCredentialsModel.findByName(name as string);
+
+    if (!credentials) {
+      res.status(404).json({ message: `No se encontró una credencial con el nombre "${name}".` });
+      return; // Finaliza la ejecución de la función
+    }
+
+    const { account_sid, auth_token } = credentials;
+    console.log('✅ Credenciales obtenidas:', { account_sid, auth_token: '***' });
+
+    // Obtener detalles de la plantilla
+    const template = await getTemplateDetails(account_sid, auth_token, id);
+
+    res.json(template); // Envía la respuesta sin usar "return"
   } catch (error) {
-    console.error('Error al obtener detalles de la plantilla:', error);
-    
-    // Si el error es específicamente que no se encontraron las credenciales
-    if ((error as Error).message === 'Credenciales no encontradas') {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'Credencial no encontrada' 
-      });
-    }
-    
-    res.status(500).json({ 
-      success: false, 
-      message: 'Error al obtener detalles de la plantilla',
-      error: (error as Error).message
-    });
+    console.error('❌ Error obteniendo detalles de la plantilla:', error);
+    res.status(500).json({ error: 'Error al obtener detalles de la plantilla' });
   }
 };
