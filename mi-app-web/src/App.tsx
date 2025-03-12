@@ -1,14 +1,12 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import TemplatesPage from './pages/TemplatesPage';
+import TemplateList from './components/TemplateList';
 
 const App: React.FC = () => {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<TemplatesPage />} />
-      </Routes>
-    </Router>
+    <div style={{ fontFamily: 'Arial, sans-serif', textAlign: 'center' }}>
+      <h1>Gestión de Plantillas de WhatsApp</h1>
+      <TemplateList />
+    </div>
   );
 };
 
