@@ -1,5 +1,5 @@
 import express from 'express';
-import { addCredentials, getUserCredentials, getCredentialById, updateCredentials, deleteCredentials } from  '../controllers/credentialsController'
+import { addCredentials, getUserCredentials, getCredentialById, updateCredentials, deleteCredentials, getCredentials } from  '../controllers/credentialsController'
 
 const router = express.Router();
 
@@ -35,7 +35,7 @@ const router = express.Router();
  *       400:
  *         description: Datos inválidos
  */
-router.route('/credentials').post(addCredentials);
+router.route('/').post(addCredentials);
 
 /**
  * @swagger
@@ -49,7 +49,7 @@ router.route('/credentials').post(addCredentials);
  *       500:
  *         description: Error en el servidor
  */
-router.route('/credentials').get(getUserCredentials);
+router.route('/').get(getCredentials); 
 
 /**
  * @swagger
@@ -96,6 +96,9 @@ router.route('/credentials/:id').get(getCredentialById);
  *                 type: string
  *               password:
  *                 type: string
+ *               auth_token:
+ *                 type: string
+ * 
  *     responses:
  *       200:
  *         description: Credencial actualizada correctamente
@@ -126,6 +129,8 @@ router.route('/credentials/:id').put(updateCredentials);
  *         description: Credencial no encontrada
  */
 router.route('/credentials/:id').delete(deleteCredentials);
+
+
 
 
 export default router;

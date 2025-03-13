@@ -11,9 +11,11 @@ export const authenticate = (
   res: Response,
   next: NextFunction
 ): void => {
+  console.log("🔍 Headers recibidos:", req.headers);
   const authHeader = req.headers.authorization;
   
   if (!authHeader) {
+    console.log("🚫 No se proporcionó token de autenticación.");
     res.status(401).json({ message: 'No se proporcionó token de autenticación.' });
     return;
   }
@@ -21,6 +23,7 @@ export const authenticate = (
   const token = authHeader.split(' ')[1];
   
   if (!token) {
+    console.log('🚫 Token mal formado.')
     res.status(401).json({ message: 'Token mal formado.' });
     return;
   }
@@ -30,6 +33,7 @@ export const authenticate = (
     req.user = { id: decoded.id };
     next();
   } catch (error) {
+    console.log('🚫 Token inválido.')
     res.status(401).json({ message: 'Token inválido.' });
     return;
   }

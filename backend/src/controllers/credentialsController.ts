@@ -1,4 +1,4 @@
-// Ejemplo de controlador ajustado en credentialsController.ts
+// credentialsController.ts
 
 import { Request, Response, RequestHandler } from 'express';
 import TwilioCredentialsModel, { TwilioCredential } from '../models/TwilioCredentials';
@@ -33,6 +33,16 @@ export const addCredentials: RequestHandler = async (req: AuthenticatedRequest, 
       success: false, 
       error: (error as Error).message
     });
+  }
+};
+
+export const getCredentials: RequestHandler = async (req: Request, res: Response) => {
+  try {
+    const credentials = await TwilioCredentialsModel.findAll();
+    res.json(credentials.map((cred) => ({ name: cred.name })));
+  } catch (error) {
+    console.error('❌ Error obteniendo credenciales:', error);
+    res.status(500).json({ error: 'Error al obtener credenciales' });
   }
 };
 

@@ -14,7 +14,7 @@ const cors = require('cors');
 
 app.use(express.json());
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-app.use(cors());
+app.use(cors({}));
 
 // Rutas públicas
 app.use('/auth', authRoutes);
